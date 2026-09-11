@@ -89,6 +89,16 @@ class BasePage:
         """Find and return all matching elements"""
         return self.driver.find_elements(*locator)
 
+    def find_element_safe(self, locator: tuple):
+        """
+        Like find_element, but returns None instead of raising
+        NoSuchElementException when the element is not found.
+        """
+        try:
+            return self.driver.find_element(*locator)
+        except Exception:
+            return None
+
     # ─────────────────────────── Actions ──────────────────────────────
 
     def click(self, locator: tuple):

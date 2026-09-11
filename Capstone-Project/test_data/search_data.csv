@@ -1,8 +1,8 @@
-search_term,expected_result
-MacBook,found
-iPhone,found
-Samsung,found
-HP,found
-NonExistentProduct12345,not_found
-Camera,found
-Tablet,found
+keyword,expected_result,min_results
+MacBook,found,1
+iPhone,found,1
+Samsung,found,1
+HP,found,1
+Apple,found,1
+xyzproductnotexist123,not_found,0
+invalidproductabc,not_found,0

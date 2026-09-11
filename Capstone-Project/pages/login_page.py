@@ -14,14 +14,15 @@ class LoginPage(BasePage):
     """Page Object for the TutorialsNinja Login Page"""
 
     # ─────────────────────── Locators ───────────────────────
-    EMAIL_INPUT       = (By.ID, "input-email")
-    PASSWORD_INPUT    = (By.ID, "input-password")
-    LOGIN_BUTTON      = (By.CSS_SELECTOR, "input[value='Login']")
-    FORGOTTEN_LINK    = (By.LINK_TEXT, "Forgotten Password")
-    ERROR_ALERT       = (By.CSS_SELECTOR, "div.alert.alert-danger")
-    PAGE_HEADING      = (By.CSS_SELECTOR, "div#content h2")
-    REGISTER_BUTTON   = (By.LINK_TEXT, "Continue")
-    BREADCRUMB        = (By.CSS_SELECTOR, "ul.breadcrumb")
+    EMAIL_INPUT                  = (By.ID, "input-email")
+    PASSWORD_INPUT               = (By.ID, "input-password")
+    LOGIN_BUTTON                 = (By.CSS_SELECTOR, "input[value='Login']")
+    FORGOTTEN_LINK               = (By.LINK_TEXT, "Forgotten Password")
+    ERROR_ALERT                  = (By.CSS_SELECTOR, "div.alert.alert-danger")
+    PAGE_HEADING                 = (By.CSS_SELECTOR, "div#content h2")
+    RETURNING_CUSTOMER_HEADING   = (By.XPATH, "//div[@id='content']//h2[contains(text(),'Returning Customer')]")
+    REGISTER_BUTTON              = (By.LINK_TEXT, "Continue")
+    BREADCRUMB                   = (By.CSS_SELECTOR, "ul.breadcrumb")
 
     # ─────────────────────── Actions ────────────────────────
 
@@ -64,11 +65,21 @@ class LoginPage(BasePage):
         return self.is_element_visible(self.ERROR_ALERT, timeout=5)
 
     def get_page_heading(self) -> str:
-        """Returns the main heading of the login page"""
+        """
+        Returns the 'Returning Customer' heading from the login page.
+        Uses a direct XPath locator targeting the exact text,
+        avoiding confusion with the 'New Customer' heading also on the page.
+        """
+        el = self.find_element_safe(self.RETURNING_CUSTOMER_HEADING)
+        if el:
+            return el.text
+        # Fallback: scan all h2 elements
         elements = self.find_elements(self.PAGE_HEADING)
-        if elements:
-            return elements[0].text
-        return ""
+        for e in elements:
+            if "returning" in e.text.lower():
+                return e.text
+        return " | ".join(e.text for e in elements) if elements else ""
+
 
     def click_forgotten_password(self):
         """Clicks the Forgotten Password link"""

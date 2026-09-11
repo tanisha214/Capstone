@@ -18,7 +18,7 @@ class SearchResultsPage(BasePage):
     PRODUCT_ITEMS        = (By.CSS_SELECTOR, "div.product-thumb")
     PRODUCT_NAMES        = (By.CSS_SELECTOR, "div.caption h4 a")
     NO_RESULT_MESSAGE    = (By.CSS_SELECTOR, "div#content p")
-    PRODUCT_PRICES       = (By.CSS_SELECTOR, "div.price")
+    PRODUCT_PRICES       = (By.CSS_SELECTOR, ".price")       # site uses <p class="price">
     LIST_VIEW_BUTTON     = (By.ID, "list-view")
     GRID_VIEW_BUTTON     = (By.ID, "grid-view")
     SORT_DROPDOWN        = (By.ID, "input-sort")

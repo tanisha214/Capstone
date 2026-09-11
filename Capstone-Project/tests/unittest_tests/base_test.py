@@ -22,6 +22,10 @@ class BaseTest(unittest.TestCase):
     """
     Base test class for all Unittest-based tests.
     Provides setUp and tearDown with automatic screenshot on failure.
+
+    Compatible with both:
+      - Standard `python -m unittest` runner
+      - Pytest runner (which wraps unittest.TestCase differently)
     """
 
     driver = None
@@ -47,13 +51,16 @@ class BaseTest(unittest.TestCase):
         self.driver.get(ConfigReader.get_base_url())
 
     def tearDown(self):
-        """Called after each test method — takes screenshot on failure, quits driver"""
-        result = self._outcome.result
-        # Check if current test has errors or failures
-        errors = [e for e in result.errors if e[0] is self]
-        failures = [f for f in result.failures if f[0] is self]
+        """
+        Called after each test method.
+        - Detects failures/errors in a way that works under both
+          the standard unittest runner AND pytest's unittest wrapper.
+        - Captures a screenshot if the test failed.
+        - Always quits the driver.
+        """
+        test_failed = self._detect_failure()
 
-        if errors or failures:
+        if test_failed:
             logger.warning(f"Test FAILED: {self._testMethodName}")
             if self.driver:
                 ScreenshotUtil.capture_on_failure(self.driver, self._testMethodName)
@@ -63,3 +70,34 @@ class BaseTest(unittest.TestCase):
         if self.driver:
             self.driver.quit()
             logger.info("Driver closed.")
+
+    # ─────────────────────── Helpers ──────────────────────────
+
+    def _detect_failure(self) -> bool:
+        """
+        Returns True if the current test has failed or errored.
+
+        Handles two execution contexts:
+        1. Standard unittest runner  → result has .errors / .failures lists
+        2. Pytest runner             → result is a TestCaseFunction;
+                                       use self._outcome.success instead
+        """
+        try:
+            outcome = self._outcome          # available in Python 3.4+
+
+            # ── Pytest path: outcome.result is a pytest TestCaseFunction ──
+            # pytest sets outcome.success = False when the test fails.
+            if hasattr(outcome, 'success'):
+                return not outcome.success
+
+            # ── Standard unittest path ────────────────────────────────────
+            result = outcome.result
+            if hasattr(result, 'errors') and hasattr(result, 'failures'):
+                errors   = [e for e in result.errors   if e[0] is self]
+                failures = [f for f in result.failures if f[0] is self]
+                return bool(errors or failures)
+
+        except AttributeError:
+            pass  # Unexpected runner — assume passed to avoid noise
+
+        return False
