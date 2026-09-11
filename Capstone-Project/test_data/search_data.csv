@@ -1,0 +1,8 @@
+search_term,expected_result
+MacBook,found
+iPhone,found
+Samsung,found
+HP,found
+NonExistentProduct12345,not_found
+Camera,found
+Tablet,found
