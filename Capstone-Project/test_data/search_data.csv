@@ -1,0 +1,8 @@
+keyword,expected_result,min_results
+MacBook,found,1
+iPhone,found,1
+Samsung,found,1
+HP,found,1
+Apple,found,1
+xyzproductnotexist123,not_found,0
+invalidproductabc,not_found,0

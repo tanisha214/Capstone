@@ -1,0 +1,4 @@
+email,password,expected_result
+ahzh6gzu8q@ooynib.com,ahzh6gzu8q@ooynib.com,success
+invalid@user.com,wrongpassword,failure
+notregistered@xyz.com,Password@1,failure
